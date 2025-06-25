@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\MahasiswaResource\Pages;
 use App\Filament\Admin\Resources\MahasiswaResource\RelationManagers;
 use App\Models\Mahasiswa;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -20,18 +21,37 @@ class MahasiswaResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
+{
+    return $form
+        ->schema([
+            Forms\Components\Select::make('user_id')
+                ->required()
+                ->relationship('user', 'name')
+                ->options(User::role('mhs')->pluck('name', 'id')),
+            Forms\Components\TextInput::make('nim')
+                ->required()
+                ->unique(ignoreRecord: true)
+                ->maxLength(255),
+        ]);
+}
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nim')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

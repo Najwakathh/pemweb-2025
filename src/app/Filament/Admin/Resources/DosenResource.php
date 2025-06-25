@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\DosenResource\Pages;
 use App\Filament\Admin\Resources\DosenResource\RelationManagers;
 use App\Models\Dosen;
+use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,7 +24,13 @@ class DosenResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\Select::make('user_id')
+                    ->required()
+                    ->relationship('user', 'name')
+                    ->options(User::role('dsn')->pluck('name', 'id')),
+                Forms\Components\TextInput::make('kd_dosen')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -31,7 +38,18 @@ class DosenResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('kd_dosen')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
